@@ -1,0 +1,270 @@
+\documentclass{llncs}
+
+\usepackage{amsfonts, amsmath}
+
+\usepackage{lipsum}
+\usepackage{xspace}
+
+\usepackage{stmaryrd}
+
+%\usepackage{listings}
+\usepackage{multicol}
+
+\input{macros}
+
+
+\newcommand\prule{\mathtt{p}}
+\newcommand\srule{\mathtt{s}}
+\newcommand{\erule}{\mathtt{e}}
+\newcommand{\crule}{\mathtt{c}}
+
+\newcommand{\ifinst}{\mathbf{if}}
+\newcommand{\theninst}{\mathbf{then}}
+\newcommand{\elseinst}{\mathbf{else}}
+\newcommand{\whileinst}{\mathbf{while}}
+\newcommand{\doinst}{\mathbf{do}}
+\newcommand{\structinst}{\mathbf{struct}}
+\newcommand{\globalinst}{\mathbf{global}}
+
+\newcommand{\bool}{\mathsf{bool}}
+\newcommand{\True}{\mathsf{t}}
+\newcommand{\False}{\mathsf{f}}
+
+\newcommand{\atomicbegin}{\mathsf{ATOMIC()}}
+\newcommand{\atomicend}{\mathsf{END\_ATOMIC()}}
+
+\newcommand{\inv}[1]{\mathbf{inv}\ \mathtt{#1}}
+\newcommand{\ret}[2]{\mathbf{ret}\ \mathtt{#1} \vartriangleright #2}
+
+
+\newcommand{\Integer}{\mathbb Z}
+\newcommand{\Memory}{\mathbb{M}}
+\newcommand{\Thread}{\mathcal T}
+\newcommand{\Traces}{\mathcal T\!r}
+\newcommand{\aTraces}{\mathcal T\!r^\sharp}
+
+\newcommand{\parallelcomposition}{\Vert}
+
+
+\let\code\texttt
+
+\DeclareMathOperator{\lfp}{lfp}
+\DeclareMathOperator{\tid}{tid}
+\DeclareMathOperator{\red}{red}
+
+\begin{document}
+
+\title{Contribution Title}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Guillaume Cluzel\inst{1} \and
+Cezara Dr\u{a}goi\inst{2,3}}
+%
+\authorrunning{F. Author et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Princeton University, Princeton NJ 08544, USA \and
+Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
+\email{lncs@springer.com}\\
+\url{http://www.springer.com/gp/computer-science/lncs} \and
+ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
+\email{\{abc,lncs\}@uni-heidelberg.de}}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+The abstract should briefly summarize the contents of the paper in
+150--250 words.
+
+\keywords{First keyword  \and Second keyword \and Another keyword.}
+\end{abstract}
+
+
+
+
+
+
+
+  \section{Introduction}
+  
+   
+
+
+  
+  
+  \section{Description of the language}
+ 
+  \subsection{Syntax}
+  
+    \begin{figure}
+    \begin{eqnarray*}
+      \prule & ::= & \srule_{init} ; (\srule_1 \ \parallelcomposition \ \cdots \ \parallelcomposition \ \srule_n \ \parallelcomposition \ \cdots)\\
+      \srule & ::= & \ifinst\ \crule\ \theninst \ {\srule} \ \elseinst \ {\srule} \mid 
+      				\whileinst \ \crule \ \doinst \ {\srule} \mid 
+      				x := \erule \mid *p := \erule \mid
+      				\srule ; \srule \\
+      				& & \mid \atomicbegin \mid \atomicend \\
+      \erule & ::= & n \in \Integer \mid x \in \nvars \mid *p \in \pvars \mid
+      			  \erule + \erule \mid \erule - \erule \mid \erule \times \erule \\
+      \crule & ::= & \erule = 0 \mid \erule \neq 0 \mid \erule < 0 \mid \cdots
+    \end{eqnarray*}
+    \caption{Syntax of our concurrent language}
+    \label{fig:syntax}
+  \end{figure}
+ 
+	We consider a simple language that is described in the figure \ref{fig:syntax}. Let \vars\ be the set of program variables, with \nvars\ the set of  variables of basic type and \pvars\ the set of variables of composite (record) type. 
+W.l.o.g. we consider only integer variables  and pointers to user defined struct types. 
+Furthermore we distinguish the shared variables, of basic or composite type, and we denote them by \snvars and \spvars. The shared variables are declared with the $\globalinst$.
+
+ We introduce the operator of parallel composition $\Vert$. The rule $\prule$ means that a program fist calls an $init$ function which corresponds to the initialization of the shared variables used by the data structure and then it calls an unbounded number of threads $t_1, \dots, t_n, \dots$ that execute in parallel $\srule_1, \dots, \srule_n, \dots$ respectively. We denote as $\Thread$ the set of all running threads. 
+ 
+	We also introduce two built-in functions $\atomicbegin$ and $\atomicend$ that are used in the way $\atomicbegin ; \srule ; \atomicend$ to make the statements $\srule$ atomic, which means that no process can interfere and the code $\srule$ is executed without interruption. 
+	
+	For simplicity, we will regroup different variables inside a structure, like in C language to allow us to create more powerful structures. We will define this structure with the keyword $\structinst$ following by the name of the struct, and access its members by \textit{structname.varname}. 
+	
+We will also regroup different instructions inside functions that can take arguments, and can return a value.
+	
+	\subsection{Concrete state semantic}
+	
+	
+
+The state of a program is given by an evaluation of the shared variables and an evaluation of the local variables of each thread. 
+Let $t_1,\ldots, t_n$ be $n$ threads running a program \prog. 
+
+
+
+A memory state $\sigma=(\sigma_s, \sigma_{1}, \ldots ,\sigma_{n})$ is an evaluation of the program variables, where $\sigma_s$ is an evaluation of the shared variables and $\sigma_{i}$ is an evaluation of the local variables of thread $t_i$, for each $i\in [1,n]$. 
+We define 
+$\sigma(x)=\sigma_s(x)$ if $x$ is a shared variable, otherwise $\sigma(x)=\sigma_i(x)$ if $x$ is a local variable of $t_i$, for some $i\in[1,n]$.  We denote $\Memory$ the set of all memory state. 
+
+We consider the heap is a  labeled graph $G=(V,E)$, where nodes in $V$ are objects of struct type, and an edge in $E$  represents the interpretation of pointer fields of struct objects. For simplicity, we model numeric fields as node labels. 
+Therefore, 
+$\sigma_s(x), \sigma_i(x) $ is an integer if $x$ is a basic type variable, and 
+$\sigma_s(x), \sigma_i(x)$ is a node in the graph, representing memory location storing an object of the $x$'s type,  if $x$ is a pointer variable.  
+
+For each instruction we can define a concrete semantic $\exec{\crule} : \Memory \rightarrow \bool$, $\exec{\erule} : \Memory \rightarrow \Memory$ and $\exec{\srule} : \mathcal{P}(\Memory) \rightarrow \mathcal{P}(\Memory)$ for all $\sigma\in \Memory$ and $\mathcal E \in \mathcal{P}(\Memory \rightarrow \Memory)$ by:
+\begin{align*}
+	& \exec{n}(\sigma) = n \qquad n \in\Integer \\
+	& \exec{x}(\sigma) = \sigma(x) \qquad x\in \vars\\
+	& \exec{\erule_1 \diamond \erule_2}(\sigma) = \exec{\erule_1}(\sigma) \diamond \exec{\erule_2}(\sigma) \qquad \diamond \in \{+, -, \times\} \\
+	& \exec{\erule \Join 0}(\sigma) = \begin{cases}
+		\True & \text {if } \exec{\erule}(\sigma) \Join 0 \\
+		\False & \text{if } \exec{\erule}(\sigma) \Join 0 
+	\end{cases} \qquad \Join\in\{=, \neq, >, \dots\} \\
+	& \exec{x := \erule}(\mathcal E) = \{\sigma[x \leftarrow \exec{\erule}(\sigma)] \mid \sigma\in\mathcal{E}\}\\
+	& \exec{\ifinst\ \crule\ \theninst \ {\srule_1} \ \elseinst \ {\srule_2}}(\mathcal E) = \exec{\srule_1}\{\sigma \in \mathcal{E} \mid \exec{\crule}(\sigma) = \True\} \cup \exec{\srule_1}\{\sigma \in \mathcal{E} \mid \exec{\crule}(\sigma) = \False\} \\
+	& \exec{\srule_1 ; \srule_2}(\mathcal E) = \exec{\srule_2}(\exec{\srule_1}(\mathcal E))
+\end{align*}
+
+To describe the semantic of the loops we use the notion of the least fix-point ($\lfp$):
+	\begin{align*}
+	&\exec{\whileinst \ \crule \ \doinst \ {\srule}}(\mathcal E) = \left\{ \left. \sigma \in \bigcup_{i \in \mathbb N} F_b^i(\mathcal{E}) \ \right| \ \exec{\crule}(\sigma) = \True\right\} = \lfp F_b\\
+	&\begin{array}{cccc}
+    \text{with } F_b: & \mathcal{P}(\Memory) & \longrightarrow & \mathcal{P}(\Memory)  \\ 
+     & \mathcal E & \longmapsto & \exec{\srule} (\{ \sigma \in \mathcal{E} \mid  \exec{\crule}(\sigma) = \False \} )
+    \end{array} 
+\end{align*}
+
+
+
+The semantic of our concurrent programs that we consider is the \emph{interleaving semantic}. After each execution of an atomic bloc of instructions, any other thread can execute an atomic bloc of instructions. This behavior of concurrent programs can be modeled by a transition system $(\Sigma, I, \tau)$ where $\Sigma$ is the set of every reachable memory states, $I$ is the initial memory state after having executed the $init$ method. The transition function $\tau$ is derived from the sequential execution of each thread, where $\srule_t$ always represent an atomic bloc in this case. 
+\[\tau_t (\mathcal E) := \exec{\srule_t}(\mathcal E)\]
+This states that each step of the program execution is the execution of any single thread  $t$ which only updates its local memory and the global memory and leaves the memory of the other threads unchanged. Thus, we can define $\tau = \bigcup_{t\in\Thread} \tau_t$.
+
+The set of reachable states of the whole program can be defined with a fix-point. 
+\[\exec{\srule_1 \ \parallelcomposition \ \cdots \ \parallelcomposition \ \srule_n \ \parallelcomposition \ \cdots}(\mathcal E) = \bigcup_{i \geq 0} \tau^i = \lfp \tau\]
+
+
+The semantic of the two built-in functions $\atomicbegin$ and $\atomicend$ is different from the other instructions. They are used by the scheduler to know that the code inside an atomic bloc cannot be interrupted by another thread. The transition function $\tau$ can only be applied on atomic bloc as specified previously. 
+
+
+	\subsection{Concrete trace semantic}
+	
+We can use another semantic with our parallel programs which is a trace semantic. Better than keeping the memory states at each point of the program, we can only keep the instructions executed, and we keep the order in which they were executed. A trace a is sequence of an atom of the form $(t, \mathtt{op})$ where $t \in \Thread$ is the thread that executes the operation $\mathtt{op}$. It can be an assignment, a comparison or an arithmetic operation. We will also add the call of function of the form $\inv{fun}$, and the return of function with the value returned $\ret{fun}{val}$.
+We denote as $\Traces$ the set of all traces $T$. 
+
+We notice that the trace is more expressive than the memory state at a given point of the program because we can obtain the memory state from the trace. Indeed, if we execute the different operations in the trace we can compute the memory state exactly like if we executed the program. But the traces keep more information. They can express relations between threads.
+
+
+
+
+\section{Description of the abstract domain}
+
+\begin{definition}
+	An \textbf{abstract trace} $T \in \aTraces$ is a partially ordered sequence of atoms $a_1, \dots, a_n$, that we denote as $T = a_1 \cdot \ldots \cdot a_n$. These atoms can be an invocation of a function $(t, \inv{f})$, a return of a function $(t, \ret{f}{v})$, or a write on the shared memory. Let $a \prec a'$ if $\tid(a) = \tid(a')$ and $a$ is executed before $a'$ or if there exists a data dependency between $a$ and $a'$ (\emph{i.e.} $a'$ involves data written by $a$). A trace is \textbf{complete} if every invocation has a matching response. The \textbf{contretization} $\gamma_{\Traces}$ of an abstract trace $T$ is the set of all concrete traces that contains the atoms of $T$, that respect the order verified by the atom in $T$ and that have the same shared memory state at the end of the execution than the abstract trace.
+\end{definition}
+
+The partial order $\prec$ on the atoms induces a partial order on the abstract traces, \textit{i.e.} if $T = T_1 \cdot T_2$, we said that $T_1 \prec T_2$ if there exist $a\in T_1$ and $a' \in T_2$ such that $a\prec a'$. 
+
+
+\begin{definition}
+		Two abstract traces $T = a_1 \cdot \ldots \cdot a_n$ and $T' = a_1' \cdot \ldots \cdot a_k'$ are \textbf{equal} if there exists a bijective function $\varphi : \{a_1,\dots,a_n\} \rightarrow \{a_1',\dots, a_k'\}$ that conserves the order. 
+\end{definition}
+
+\begin{definition}
+	An abstract trace $T$ is \textbf{reduced} if for all complete traces $T_1$ and $T_2$ such that $T=T_1\cdot T_2$ then $T_1 \prec T_2$. 
+\end{definition}
+
+
+
+Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial trace. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace. 
+
+
+
+More than an abstract trace, we need to keep the abstract memory state. Our aim is to connect the different values input and output by the function. For that, we need to use a relational abstract domain to represent the relation between the values of the variables. We can use the polygon abstract domain \cite{DBLP:journals/lisp/Mine06} to express these relations. 
+
+
+
+\begin{definition}[Abstract value]
+	An abstract value is disjunction of pairs $(T_i, S_i)$ where $T_i \in \aTraces$ is the abstract trace and $S_i$ is the global memory state corresponding to the abstract trace $T$, existencially quantified on the thread $t_1, \dots, t_n$. The \textbf{concretization} $\gamma$ associate the most general concrete traces and abstract states, \emph{i.e.}
+	\[\gamma\left(\bigvee_i (T_i, S_i)\right) = \bigcup_i \{ (T, M_{T_i}) \mid T\in\gamma_{\Traces}(T_i) \}\]
+	where $M_{T_i}$ is the memory state after the execution of the trace $T$. 
+\end{definition}
+
+
+
+
+
+Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2)$ cannot only be the join of the abstract memory state $S_1$ and $S_2$, because the traces $T_1$ and $T_2$ that have induced these memory states are not necessary the same. If we analyze the code $\ifinst\ \mathrm{rand}(0,1) = 0\ \theninst \ x := 1 \ \elseinst \ x :=2$ on a thread $t$, we will get after the affectation in the then part the abstract value $(T_1 = T \cdot (t, x:=1), \{x = 1\})$ and in the else part $(T_2 = T \cdot (t, x:= 2), \{x = 2\})$. Since the two traces $T_1$ and $T_2$ are not equal, we cannot consider to join the two abstracts traces into a unique trace. We would lose too much information. 
+
+
+\begin{definition}[Join]
+	Let $A = \bigvee_i (T_i, S_i)$ and $A' = \bigvee_j (T_j', S_j')$ two abstract values. We define
+	\[A \sqcup A' := \left(\bigvee_{\substack{i,j\\T_i \neq T_j}} (T_i, S_i) \right) \vee \left(\bigvee_{\substack{i,j \\ T_i = T_j}} (T_i, S_i \sqcup S_j) \right)\]
+\end{definition}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Example of analysis}
+
+
+
+
+
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{nsadbiblio}
+\end{document}

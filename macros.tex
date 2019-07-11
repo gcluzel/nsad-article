@@ -1,0 +1,177 @@
+\newcommand{\seqcomp}[1]{\mathrm{mono}(#1)}
+
+
+\newcommand{\mytilde}{\kern -.15em\lower .7ex\hbox{\~{}}\kern .04em}
+
+%\newcommand{\comment}[1]{\textcolor{pink}{#1}}
+\newcommand{\alert}[1]{\textcolor{red}{#1}}
+\newcommand{\cd}[1]{{\color{violet}{\hrule\noindent[{\bf CD:} {\em #1}] \hrule}}}
+\newcommand{\jw}[1]{{\color{blue}{\hrule\noindent[{\bf JW:} {\em #1}] \hrule}}}
+\newcommand{\dz}[1]{{\color{green}{\hrule\noindent[{\bf DZ:} {\em #1}] \hrule}}}
+\newcommand{\ignore}[1]{}
+
+%\newtheorem{example}{Example}
+%\newtheorem{proposition}{Proposition}
+%\newtheorem{lemma}{Lemma}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{definition}{Definition}
+%\newtheorem{corollary}{Corollary}
+%\newtheorem{remark}{Remark}
+
+
+\newcommand{\asigma}{\ensuremath{\mathsf{HO}}\xspace}
+
+\newcommand{\pvars}{\textsc{Pvar}\xspace}
+\newcommand{\nvars}{\textsc{Nvar}\xspace}
+\newcommand{\vars}{\textsc{Vars}\xspace}
+
+\newcommand{\spvars}{\textsc{SPvar}\xspace}
+\newcommand{\snvars}{\textsc{SNvar}\xspace}
+\newcommand{\svars}{\textsc{SVars}\xspace}
+
+
+\newcommand{\psync}{\textsc{PSync}\xspace}
+\newcommand{\newpsync}{\ensuremath{\mathsf{A^{+}PSync}\xspace}}
+\newcommand{\dsl}{\psync}
+\newcommand{\ho}{\ensuremath{\mathsf{HO}}\xspace}
+\newcommand{\logic}{\ensuremath{\mathbb{CL}}\xspace}
+
+\newcommand{\zabho}{{\texttt{Zab-HO}}\xspace}
+
+\newcommand{\algorw}{{\texttt{make-CompHO}}\xspace}
+
+%\renewcommand{\next}{\textit{succ}}
+
+
+\newcommand{\entailed}{\sqsubseteq}
+\newcommand{\meet}{\sqcap}
+\newcommand{\join}{\sqcup}
+\newcommand{\bigjoin}[2]{\bigsqcup_{#2}~\hspace{-2mm}^{#1}\ }
+\newcommand{\bigjoinn}[2]{\bigsqcup_{#2}~\hspace{-8mm}^{#1}\ }
+\newcommand{\bigmeet}[2]{\sqcap^{#1}_{#2}~\hspace{-2mm}\ }
+\newcommand{\widen}{\nabla}
+
+
+\newcommand{\ph}{\ensuremath{\mathit{ph}}}
+\newcommand{\rd}{\ensuremath{\mathit{rd}}}
+
+\newcommand{\aexec}{\ensuremath{\pi}}
+\newcommand{\arun}{\ensuremath{\alpha}}
+\newcommand{\ags}{\ensuremath{\alpha}}
+\newcommand{\runtime}{\ensuremath{\mathit{Runtime}}}
+\newcommand{\TS}{\ensuremath{\mathit{TS}}}
+\newcommand{\App}{\ensuremath{\mathit{App}}}
+\newcommand{\ra}{\ensuremath{\rightarrow}}
+\newcommand{\prj}[1]{\hspace{-1.4mm}\downharpoonright_{#1}}
+
+\newcommand{\otr}{{\em OTR}\xspace}
+\newcommand{\lastvoting}{{\em LastVoting}\xspace}
+\newcommand{\scala}{{\sc Scala}\xspace}
+
+\newcommand{\distarray}{{\em DistributedArray}\xspace}
+\newcommand{\viewstamped}{{\em ViewStamped}\xspace}
+\newcommand{\caller}{{\em Caller}\xspace}
+\newcommand{\callee}{{\em Callee}\xspace}
+
+
+\newcommand{\rid}{\textit{ID}\xspace}
+\newcommand{\rvnb}{\textit{view-nb}}
+\newcommand{\rstatus}{\textit{stat}}
+\newcommand{\rop}{\texttt{op-nb}}
+\newcommand{\rlog}{\textit{log}}
+\newcommand{\rcom}{\textit{commit}}
+\newcommand{\rclient}{\textit{CTab}}
+
+
+\newcommand{\coord}{\texttt{coord}}
+
+
+\newcommand{\asyncexec}[1]{\ensuremath{\textsf{ae}^{#1}}}
+\newcommand{\syncexec}[1]{\ensuremath{\textsf{se}^{#1}}}
+\newcommand{\obsref}{\ensuremath{\sim}}
+
+
+%\newcommand{\exec}[1]{\ensuremath{\mathsf{Exec}(#1)}}
+\newcommand{\exec}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+\newcommand{\run}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+%\newcommand{\ls}[1]{\ensuremath{\llbracket #1 \rrbracket_{ls}}}
+\newcommand{\ls}[1]{\ensuremath{\llbracket #1 \rrbracket}}
+\newcommand{\rt}[1]{\ensuremath{\llbracket #1 \rrbracket_{rt}}}
+\newcommand{\tuple}[1]{\left<{#1}\right>}
+\newcommand{\TR}{\ensuremath{\mathit{TR}}}
+\newcommand{\runs}[1]{\ensuremath{\mathsf{Runs}(#1)}}
+\newcommand{\traces}[1]{\ensuremath{\mathsf{Traces}(#1)}}
+
+
+\newcommand{\prog}{\ensuremath{\mathcal{P}}\xspace}
+
+
+\newcommand{\nothing}{\ensuremath{\ast}\xspace}
+%\newcommand{\nothing}{\text{\textvisiblespace}\xspace}
+\newcommand{\init}{\text{\texttt{init}}\xspace}
+\newcommand{\round}{\text{\texttt{round}}\xspace}
+\newcommand{\send}{\text{\texttt{send}}\xspace}
+\newcommand{\phase}{\text{\texttt{phase}}\xspace}
+
+
+\newcommand{\update}{\text{\texttt{update}}\xspace}
+\newcommand{\finishRound}{\text{\texttt{finishRound}}\xspace}
+\newcommand{\ninit}{\text{\texttt{init}}\xspace}
+\newcommand{\nreceive}{\text{\texttt{receive}}\xspace}
+\newcommand{\nfinish}{\text{\texttt{finish}}\xspace}
+
+%\renewcommand{\path}{\ensuremath{\mathtt{\pi}}\xspace}
+\newcommand{\mailbox}{\ensuremath{\mathtt{mbox}}\xspace}
+
+
+\newcommand{\pid}{\ensuremath{\mathit{pid}}\xspace}
+
+\newcommand{\pc}{\ensuremath{\mathsf{pc}}}
+
+
+\newcommand{\loc}{\ensuremath{\mathtt{Loc}}\xspace}
+%\newcommand{\vars}{\ensuremath{\mathtt{Vars}}\xspace}
+\newcommand{\avars}{\ensuremath{\mathtt{AVars}}\xspace}
+\newcommand{\rvars}{\ensuremath{\mathtt{RVars}}\xspace}
+
+%\newcommand{\svars}{\ensuremath{\mathtt{SyncV}}\xspace}
+\newcommand{\buf}{\ensuremath{\mathtt{B}}\xspace}
+\newcommand{\tags}{\ensuremath{\mathtt{tags}}\xspace}
+\newcommand{\tagm}{\ensuremath{\mathtt{tagm}}\xspace}
+\newcommand{\dompaytype}{\ensuremath{\mathcal{T}}\xspace}
+\newcommand{\paytype}{\ensuremath{\mathbb{MT}}\xspace}
+\newcommand{\pidtype}{\ensuremath{\mathsf{Pid}}\xspace}
+\newcommand{\type}{\ensuremath{\mathbb{T}}\xspace}
+
+
+
+\newcommand{\datatype}{\ensuremath{\mathcal{D}}\xspace}
+
+
+\newcommand{\sender}{\ensuremath{\mathit{sender}}\xspace}
+\newcommand{\receiver}{\ensuremath{\mathit{receiver}}\xspace}
+\newcommand{\payload}{\ensuremath{\mathit{payload}}\xspace}
+\newcommand{\roundM}{\ensuremath{\mathit{round}}\xspace}
+
+\newcommand{\async}[1]{\ensuremath{\tilde{#1}}}
+\newcommand{\receive}{\ensuremath{receive}}
+\newcommand{\out}{\ensuremath{\texttt{out}}}
+\newcommand{\aux}{\ensuremath{\texttt{inHO}}}
+\newcommand{\outHO}{\ensuremath{\texttt{outHO}}}
+
+\newcommand{\atag}{\ensuremath{\texttt{tag}}}
+
+
+\newcommand{\undefin}{\ensuremath{\texttt{\#}}}
+
+\newcommand{\sep}{.\,}
+\newcommand{\limp}{\Rightarrow} % set of places
+
+
+\newcommand{\sem}{[\![}
+\newcommand{\antic}{]\!]}
+\newcommand{\csem}{\langle\!\langle}
+\newcommand{\cantic}{\rangle\!\rangle}
+
+
+\newcommand{\Nat}{\mathbb{N}}
