@@ -7,8 +7,17 @@
 
 \usepackage{stmaryrd}
 
-%\usepackage{listings}
+\usepackage{listings}
 \usepackage{multicol}
+
+\lstset{
+	basicstyle=\ttfamily,
+	keywordstyle=\sffamily\bfseries,
+	language=C,
+	numbers=left,
+	numberstyle=\tiny,
+	mathescape=true
+}
 
 \input{macros}
 
@@ -118,7 +127,7 @@ The abstract should briefly summarize the contents of the paper in
  
 	We consider a simple language that is described in the figure \ref{fig:syntax}. Let \vars\ be the set of program variables, with \nvars\ the set of  variables of basic type and \pvars\ the set of variables of composite (record) type. 
 W.l.o.g. we consider only integer variables  and pointers to user defined struct types. 
-Furthermore we distinguish the shared variables, of basic or composite type, and we denote them by \snvars and \spvars. The shared variables are declared with the $\globalinst$.
+Furthermore we distinguish the shared variables, of basic or composite type, and we denote them by \snvars and \spvars. The shared variables are declared with the $\globalinst$ keyword.
 
  We introduce the operator of parallel composition $\Vert$. The rule $\prule$ means that a program fist calls an $init$ function which corresponds to the initialization of the shared variables used by the data structure and then it calls an unbounded number of threads $t_1, \dots, t_n, \dots$ that execute in parallel $\srule_1, \dots, \srule_n, \dots$ respectively. We denote as $\Thread$ the set of all running threads. 
  
@@ -153,7 +162,7 @@ For each instruction we can define a concrete semantic $\exec{\crule} : \Memory 
 	& \exec{\erule_1 \diamond \erule_2}(\sigma) = \exec{\erule_1}(\sigma) \diamond \exec{\erule_2}(\sigma) \qquad \diamond \in \{+, -, \times\} \\
 	& \exec{\erule \Join 0}(\sigma) = \begin{cases}
 		\True & \text {if } \exec{\erule}(\sigma) \Join 0 \\
-		\False & \text{if } \exec{\erule}(\sigma) \Join 0 
+		\False & \text{if } \exec{\erule}(\sigma) \not\Join 0 
 	\end{cases} \qquad \Join\in\{=, \neq, >, \dots\} \\
 	& \exec{x := \erule}(\mathcal E) = \{\sigma[x \leftarrow \exec{\erule}(\sigma)] \mid \sigma\in\mathcal{E}\}\\
 	& \exec{\ifinst\ \crule\ \theninst \ {\srule_1} \ \elseinst \ {\srule_2}}(\mathcal E) = \exec{\srule_1}\{\sigma \in \mathcal{E} \mid \exec{\crule}(\sigma) = \True\} \cup \exec{\srule_1}\{\sigma \in \mathcal{E} \mid \exec{\crule}(\sigma) = \False\} \\
@@ -211,7 +220,7 @@ The partial order $\prec$ on the atoms induces a partial order on the abstract t
 
 
 
-Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial trace. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace. 
+Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial traces. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace. 
 
 
 
@@ -220,7 +229,7 @@ More than an abstract trace, we need to keep the abstract memory state. Our aim 
 
 
 \begin{definition}[Abstract value]
-	An abstract value is disjunction of pairs $(T_i, S_i)$ where $T_i \in \aTraces$ is the abstract trace and $S_i$ is the global memory state corresponding to the abstract trace $T$, existencially quantified on the thread $t_1, \dots, t_n$. The \textbf{concretization} $\gamma$ associate the most general concrete traces and abstract states, \emph{i.e.}
+	An abstract value is disjunction of pairs $(T_i, S_i)$ where $T_i \in \aTraces$ is the abstract trace and $S_i$ is the abstract shared memory state corresponding to the abstract trace $T$, existencially quantified on the thread $t_1, \dots, t_n$. The \textbf{concretization} $\gamma$ associate the most general concrete traces and abstract states, \emph{i.e.}
 	\[\gamma\left(\bigvee_i (T_i, S_i)\right) = \bigcup_i \{ (T, M_{T_i}) \mid T\in\gamma_{\Traces}(T_i) \}\]
 	where $M_{T_i}$ is the memory state after the execution of the trace $T$. 
 \end{definition}
@@ -229,7 +238,7 @@ More than an abstract trace, we need to keep the abstract memory state. Our aim 
 
 
 
-Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2)$ cannot only be the join of the abstract memory state $S_1$ and $S_2$, because the traces $T_1$ and $T_2$ that have induced these memory states are not necessary the same. If we analyze the code $\ifinst\ \mathrm{rand}(0,1) = 0\ \theninst \ x := 1 \ \elseinst \ x :=2$ on a thread $t$, we will get after the affectation in the then part the abstract value $(T_1 = T \cdot (t, x:=1), \{x = 1\})$ and in the else part $(T_2 = T \cdot (t, x:= 2), \{x = 2\})$. Since the two traces $T_1$ and $T_2$ are not equal, we cannot consider to join the two abstracts traces into a unique trace. We would lose too much information. 
+Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2)$ cannot only be the join of the abstract memory state $S_1$ and $S_2$, because the traces $T_1$ and $T_2$ that have induced these memory states are not necessary the same. If we analyze the code $\ifinst\ \mathrm{rand}(0,1) = 0\ \theninst \ x := 1 \ \elseinst \ x :=2$ on a thread $t$, we will get after the affectation in the then part the abstract value $(T_1 = T \cdot (t, x:=1), \{x = 1\})$ and in the else part $(T_2 = T \cdot (t, x:= 2), \{x = 2\})$. Since the two traces $T_1$ and $T_2$ are not equal, we cannot consider to join the two abstract traces into a unique trace. We would lose too much information. 
 
 
 \begin{definition}[Join]
@@ -257,6 +266,61 @@ Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2
 
 \section{Example of analysis}
 
+\begin{figure}
+\begin{multicols}{2}
+\begin{lstlisting}
+struct exchanger {
+  int flag, value;
+};
+
+exchange E[SIZE];
+
+int push(e) {
+  while (1 = 1) {
+    int i := rand(0, SIZE-1);
+    ATOMIC();
+    if (E[i].flag = F) {
+      E[i].flag := C;
+      E[i].value := e;
+      END_ATOMIC();
+      return 1;
+    }
+    END_ATOMIC();
+  }
+}
+
+int pop() {
+  while (1 = 1) {
+    int i = rand(0, SIZE);
+    ATOMIC();
+    if (E[i].flag := F) {
+      E[i].flag := W;
+      END_ATOMIC();
+      ATOMIC();
+      if (E[i].flag $\neq$ C) {
+        E[i].flag := F;
+      }
+      else {
+        E[i].flag := F;
+        int l := E[i].value;
+        END_ATOMIC();
+        return l;
+      }
+    }
+    END_ATOMIC();
+  }
+}
+\end{lstlisting}
+\end{multicols}
+\caption{Exchanger stack}
+\label{fig:exchangerstack}
+\end{figure}
+
+
+In this section we will show how we can use our abstract domain to find relations between operations of each thread on the exchanger stack. The code of the exchanger stack is given in the figure \ref{fig:exchangerstack}. 
+The functions \code{push} and \code{pop} can also write on the stack but we do not consider this part that we already know how to analyze. 
+
+In this stack, a \code{push} and a \code{pop} can exchange their value without using the stack. A \code{pop} executed by a thread $t$ choose a cell of the array \code{E}. If the value of the flag in this cell is equal to \code{F} (Final), then the push can change it to \code{W} meaning that he is waiting for exchanging its value with a \code{push}. A \code{push} executed by a second thread $t'$ can 
 
 
 
