@@ -1,0 +1,19 @@
+  % !TEX root = nsad.tex
+\section{Related work and conclusions}
+
+Static analysis by abstract interpretation is well perfected for numeric programs in the sequential setting and also well studied for the concurrent setting with a bounded number of threads. 
+Several successful approaches exist also for programs manipulating  sequential data structures\cite{}. 
+However, static analysis of concurrent data structures accessed concurrently by an unbounded number of threads is a research area in its beginnings. 
+
+The current state of art is the thread modular approach~\cite{threadmodular, VV1}, which  captures the effect of all threads on the shared memory, but cannot represent the relation between the local states of two threads.  Thread modular analysis are incomplete, and cooperation based algorithms do not have a thread modular proof. 
+
+The closest related works are~\cite{cav13,ee1,ee2,ee3,disc15,mine17}. 
+In~\cite{ee1,ee2,ee3} the authors give a new definition of correctness for concurrent data structures, that implies linearizability, but does not rely on linearization points.  This way of specifying data structures  reduces linearizability to a reachability problem, and it was used to develop powerful bug finding techniques based on model checking or SMT-solvers. 
+
+In~\cite{disc15} the authors highlight the need for concurrent specifications, for a sub-class of concurrent data structures, including some of the structures we are interested in. The paper defines a language to express concurrent specifications and proposes a proof methodology to establish correctness of concurrent implementations w.r.t. a concurrent specification.  No automation technique for these proofs is discussed.  
+
+Probably the work closest to our is~\cite{cav13}. It presents a static analysis for concurrent data structures with external linearization points, which in fact correspond to data structures that have a concurrent specification (as shown later in~\cite{disc15}).  
+The paper proposes a static analysis that captures relations between the local state of threads.  
+However, the proof method consists in rewriting the original library into one that has a sequential specification, and static analysis is used to prove the correctness of the rewriting. In the current paper we are interested in proving directly the implementation correct w.r.t. the concurrent specification, and we design an abstract domain that can capture the concurrent specification and the invariants required to prove it. 
+
+In conclusion ... to be concluded. 
