@@ -1,4 +1,4 @@
-\documentclass{llncs}
+\documentclass[runningheads]{llncs}
 
 \usepackage{amsfonts, amsmath}
 
@@ -70,18 +70,15 @@
 % an abbreviated paper title here
 %
 \author{Guillaume Cluzel\inst{1} \and
-Cezara Dr\u{a}goi\inst{2,3}}
+Cezara Dr\u{a}goi\inst{2}}
 %
-\authorrunning{F. Author et al.}
+\authorrunning{G. Cluzel et al.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{Princeton University, Princeton NJ 08544, USA \and
-Springer Heidelberg, Tiergartenstr. 17, 69121 Heidelberg, Germany
-\email{lncs@springer.com}\\
-\url{http://www.springer.com/gp/computer-science/lncs} \and
-ABC Institute, Rupert-Karls-University Heidelberg, Heidelberg, Germany\\
-\email{\{abc,lncs\}@uni-heidelberg.de}}
+\institute{École Normale Supérieur de Lyon \and
+INRIA, ENS, CNRS, PSL
+}
 %
 \maketitle              % typeset the header of the contribution
 %
@@ -106,6 +103,7 @@ The abstract should briefly summarize the contents of the paper in
   
   
   \section{Description of the language}
+  \label{sec:syntax}
  
   \subsection{Syntax}
   
@@ -202,6 +200,7 @@ We notice that the trace is more expressive than the memory state at a given poi
 
 
 \section{Description of the abstract domain}
+\label{sec:absDom}
 
 \begin{definition}
 	An \textbf{abstract trace} $T \in \aTraces$ is a partially ordered sequence of atoms $a_1, \dots, a_n$, that we denote as $T = a_1 \cdot \ldots \cdot a_n$. These atoms can be an invocation of a function $(t, \inv{f})$, a return of a function $(t, \ret{f}{v})$, or a write on the shared memory. Let $a \prec a'$ if $\tid(a) = \tid(a')$ and $a$ is executed before $a'$ or if there exists a data dependency between $a$ and $a'$ (\emph{i.e.} $a'$ involves data written by $a$). A trace is \textbf{complete} if every invocation has a matching response. The \textbf{contretization} $\gamma_{\Traces}$ of an abstract trace $T$ is the set of all concrete traces that contains the atoms of $T$, that respect the order verified by the atom in $T$ and that have the same shared memory state at the end of the execution than the abstract trace.
@@ -262,65 +261,9 @@ Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2
 
 
 
+\input{example}
 
 
-\section{Example of analysis}
-
-\begin{figure}
-\begin{multicols}{2}
-\begin{lstlisting}
-struct exchanger {
-  int flag, value;
-};
-
-exchange E[SIZE];
-
-int push(e) {
-  while (1 = 1) {
-    int i := rand(0, SIZE-1);
-    ATOMIC();
-    if (E[i].flag = F) {
-      E[i].flag := C;
-      E[i].value := e;
-      END_ATOMIC();
-      return 1;
-    }
-    END_ATOMIC();
-  }
-}
-
-int pop() {
-  while (1 = 1) {
-    int i = rand(0, SIZE);
-    ATOMIC();
-    if (E[i].flag := F) {
-      E[i].flag := W;
-      END_ATOMIC();
-      ATOMIC();
-      if (E[i].flag $\neq$ C) {
-        E[i].flag := F;
-      }
-      else {
-        E[i].flag := F;
-        int l := E[i].value;
-        END_ATOMIC();
-        return l;
-      }
-    }
-    END_ATOMIC();
-  }
-}
-\end{lstlisting}
-\end{multicols}
-\caption{Exchanger stack}
-\label{fig:exchangerstack}
-\end{figure}
-
-
-In this section we will show how we can use our abstract domain to find relations between operations of each thread on the exchanger stack. The code of the exchanger stack is given in the figure \ref{fig:exchangerstack}. 
-The functions \code{push} and \code{pop} can also write on the stack but we do not consider this part that we already know how to analyze. 
-
-In this stack, a \code{push} and a \code{pop} can exchange their value without using the stack. A \code{pop} executed by a thread $t$ choose a cell of the array \code{E}. If the value of the flag in this cell is equal to \code{F} (Final), then the push can change it to \code{W} meaning that he is waiting for exchanging its value with a \code{push}. A \code{push} executed by a second thread $t'$ can 
 
 
 
@@ -330,6 +273,6 @@ In this stack, a \code{push} and a \code{pop} can exchange their value without u
 
 
 
-\bibliographystyle{plain}
-\bibliography{nsadbiblio}
+%\bibliographystyle{plain}
+%\bibliography{nsadbiblio}
 \end{document}

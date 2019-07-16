@@ -17,7 +17,7 @@ Given their sequential specification, verification methods~\cite{threadmodular, 
 
 
 More recent non-blocking data structures like, stack-elimination~\cite{elimination} or combined funnels~\cite{ShavitZ98}, increase the parallel access to the data structure by implementing a {\em collaboration mechanism}. Roughly, two concurrent operations, e.g., a push and a pop, are allowed to exchange values without accessing the shared stack, using instead a pair of registers. The performance of these data structures emerges in heavily concurrent environments  where hundred of threads try to access the data structure in parallel. The implementation  of stack-elimination uses an auxiliary (elimination) array, where each array cell is a pair of registers that allows two operations to exchange values. The size of the array determines the number of operations that can be done in parallel.  
-The exchange mechanism is implemented also as a stand alone data structure, \texttt{java.exchanger}, in the library \texttt{java.conncurent}, being available as a synchronization primitive between two threads. 
+The exchange mechanism is implemented also as a stand alone data structure, \texttt{java.exchanger}, in the library \texttt{java.concurent}, being available as a synchronization primitive between two threads. 
 All collaboration mechanisms are based on a shared memory implementation of a message passing protocol between the threads that exchange values. 
 Therefore these data structures have a concurrent specification~\cite{disc15}, that captures the effect of the collaboration between two threads. 
 

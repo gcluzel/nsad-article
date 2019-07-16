@@ -1,0 +1,123 @@
+\section{Example of analysis}
+\label{sec:example}
+
+\begin{figure}
+\begin{multicols}{2}
+\begin{lstlisting}
+int F = 0, W = 1, C = 2;
+struct exchanger {
+  int flag, value;
+};
+exchanger E 
+  := {flag=F,value=0};
+
+int push(e) {
+  while (1 = 1) {
+    ATOMIC();
+    if (E.flag = W) {
+      E.flag := C;
+      E.value := e;
+      return 1;
+      END_ATOMIC();
+    }
+    END_ATOMIC();
+  }
+}
+int pop() {
+  while (1 = 1) {
+    ATOMIC();
+    if (E.flag = F) {
+      E.flag := W;
+      END_ATOMIC();
+      ATOMIC();
+      if (E.flag $\neq$ C) {
+        E.flag := F;
+      }
+      else {
+        E.flag := F;
+        int l := E.value;
+        END_ATOMIC();
+        return l;
+      }
+    }
+    END_ATOMIC();
+  }
+}
+\end{lstlisting}
+\end{multicols}
+\caption{Exchanger stack}
+\label{fig:exchangerstack}
+\end{figure}
+
+
+In this section we will show how we can use our abstract domain to find relations between operations of each thread on the exchanger stack. The code of the exchanger stack is given in the figure \ref{fig:exchangerstack}. 
+The functions \code{push} and \code{pop} can also write on the stack but we do not consider this part that we already know how to analyze. 
+
+In this stack, a \code{push} and a \code{pop} can exchange their value without using the stack. If the value of the variable \code{flag} is equal to \code{F} (Final), then a \code{pop} executed by a thread $t$ can change it to \code{W} (Waiting) meaning that it is waiting for exchanging its value with a \code{push}. 
+Meanwhile, a \code{push} executed by a second thread $t'$ will detect that the value of the \code{flag} variable is equal to \code{W}, and the \code{push} will change it in \code{C} (Collided) and put its value \code{e} in the variable \code{value}. 
+The thread $t$ that execute the \code{pop} can resume its execution and since the value of the flag has changed and is now equal to \code{C} then it resets the flag and returns the value passed by the \code{push}. 
+
+The aim of our analysis is to highlight the dependencies that exist between a push and a pop. For example we will show that for every \code{pop} that returns a value $v$, there exists a corresponding \code{push} that was called with the argument $v$.
+
+
+
+\paragraph{Analysis of the init part} 
+
+The library is first call in a sequential mode to be initialized. The initialization step only set the variable \code{E} to its initial value, which means that we will obtain as an initial state for the memory, the state $\{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}$.
+
+
+\paragraph{First step of the analysis}
+
+The analysis starts with an empty trace and the initial state for the shared memory discover in the previous step. We start, for example, by analyzing the \code{pop} function on a thread $t$. We add to the trace the atom $(t, \inv{pop}())$. At line 23, since the abstract state contains the constraint $\mathtt{E.flag} = \mathtt{F}$, we analyze the following code and in particular the write of the shared memory at line 24. 
+At this point we add an atom a the end of the trace and we modify the abstract state that represent the memory state. Since the shared memory has been written, an action is generated, which is the transition between the previous write on the memory (or the initial state if there is no previous write) and the state after the write on the memory. 
+In our case, the action generated is the following:
+\[\begin{cases}
+	T = \varepsilon\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases} \leadsto
+\begin{cases}
+	T = (t, \inv{pop}()) \cdot (t, \mathtt{E.flag} = \mathtt{W})\\
+	M = \{\mathtt{E.flag} = \mathtt{W} \wedge \mathtt{E.value} = 0\}
+\end{cases}\]
+
+If we continue the analysis, we obtains that \code{E.flag} is flipped back to \code{F} because we know in this case that \code{E.flag} is different than \code{C}. At this point we have to generate another action because we have written the shared memory, and then we go back at the beginning of the loop. 
+When we apply the widening operator after one iteration in the loop, we get the abstract state before the first iteration. Then the analysis of the \code{pop} is finished. 
+
+\paragraph{Second step of the analysis}
+
+Now the analysis use another thread $t'$ to analyze a function of the library. We will consider that the function \code{push} is analyzed during the second step. Before the call of the \code{push} function, we have to stabilize with all the possible actions from the other thread. Applying the reduce operation on top of the stabilization give us the following initial abstract state for the \code{push} analysis.
+\[\begin{cases}
+	T = \varepsilon\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases} \vee
+\begin{cases}
+	\exists t \\
+	T = (t, \inv{pop}()) \cdot (t, \mathtt{E.flag} = \mathtt{W})\\
+	M = \{\mathtt{E.flag} = \mathtt{W} \wedge \mathtt{E.value} = 0\}
+\end{cases}
+\]
+At the line 11, the test imposes to refine the abstract state with only the second part of the disjunction, and then we get a new action after the affectations and the return, at the end of the atomic bloc. 
+After this first iteration we need to widen with the abstract state got at the end of the loop after the first iteration which is: 
+\[\begin{cases}
+	T = (t', \inv{push}(\mathtt{e}))\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases}
+\]
+because the other part of the abstract state was use in the if-then part, and finished with a return.
+
+We get the same abstract value than before the loop after a widening, because we haven't changed anything. This step is finished.
+
+The only action generated during the analysis is
+
+
+
+
+
+
+\paragraph{Third step of the analysis} We continue our analysis with another thread $t$. We will analyze for example the \code{pop} function. We can start by stabilizing with all the possible actions which give us the initial state to start the analysis of the \code{pop}.
+After the stabilization and the execution of the call of the function, we get the state:
+\[
+
+
+
+
