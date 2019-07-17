@@ -9,7 +9,7 @@ struct exchanger {
   int flag, value;
 };
 exchanger E 
-  := {flag=F,value=0};
+      := {flag=F,value=0};
 
 int push(e) {
   while (1 = 1) {
@@ -81,7 +81,25 @@ In our case, the action generated is the following:
 \end{cases}\]
 
 If we continue the analysis, we obtains that \code{E.flag} is flipped back to \code{F} because we know in this case that \code{E.flag} is different than \code{C}. At this point we have to generate another action because we have written the shared memory, and then we go back at the beginning of the loop. 
-When we apply the widening operator after one iteration in the loop, we get the abstract state before the first iteration. Then the analysis of the \code{pop} is finished. 
+When we apply the widening operator after one iteration in the loop, we get the same abstract state than before the first iteration because:
+\begin{scriptsize}
+\begin{multline*}
+\begin{cases}
+	T = (t, \inv{pop}())\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases}
+\nabla
+\begin{cases}
+	T =  (t, \inv{pop}())\cdot(t, \mathtt{E.flag=W})\cdot (t, \mathtt{E.flag=F})\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases} \\ =
+\begin{cases}
+	T = (t, \inv{pop}())\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases}
+\end{multline*} 
+\end{scriptsize}
+Then the analysis of the \code{pop} is finished. 
 
 \paragraph{Second step of the analysis}
 
@@ -107,7 +125,7 @@ because the other part of the abstract state was use in the if-then part, and fi
 
 We get the same abstract value than before the loop after a widening, because we haven't changed anything. This step is finished.
 
-The only action generated during the analysis is
+
 
 
 
@@ -115,9 +133,34 @@ The only action generated during the analysis is
 
 
 \paragraph{Third step of the analysis} We continue our analysis with another thread $t$. We will analyze for example the \code{pop} function. We can start by stabilizing with all the possible actions which give us the initial state to start the analysis of the \code{pop}.
-After the stabilization and the execution of the call of the function, we get the state:
-\[
+After the stabilization and the execution of the call of the function, we can have called 1) no function (then \code{E.flag} is equal to \code{F}), 2) only a pop and changed the \code{flag} value to \code{W} or 3) a pop and a push and the value of the flag is \code{C} and the variable \code{value} contains the value of the argument of the push.
+To verify the condition at the line 23, it is mandatory that the flag is equal to \code{F}. In this case, only the 1) in the abstract state verify it. 
+
+When the analysis reaches the line 25, the atomic bloc is finished and we can stabilize with all the possible actions. The action
+\begin{footnotesize}
+\[\begin{cases}
+	\exists t_1, \\
+	T_1 = (t_1, \inv{pop}())\cdot (t_1, \mathtt{E.flag} = \mathtt{W}) \\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
+\end{cases} \!\!\!\!\!\!\!
+\leadsto
+\begin{cases}
+	\exists t_1, t_2,\\
+	T = T_1 \cdot (t_2, \inv{push}(e_{t_2})) \cdot (t_2, \mathtt{E} = \{\mathtt{W}, e_{t_2}\})\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = e_{t_2} \wedge e_{t_2} = \top\}
+\end{cases}
+\]
+\end{footnotesize}
+can be applied now if we suppose that $t_1 = t$. It is the only abstract value that does not verify the condition at line 27. With this abstract value, we generate a new action at line 31, that we can complete with the return that directly follow the write in the global memory. 
+
+After one iteration of the loop, we need to widen with our operator $\nabla$. Like in the first iteration, the traces have increased with irrelevant atoms. The widening operation will reduce our traces to remove them to obtain, like in the first step, a stable abstract value. 
 
 
+\paragraph{Next steps} Up to this point we have partially prove what we wanted to obtain, \emph{i.e.} the trace
+\begin{multline*}
+(t_1, \inv{pop}())\cdot (t_1, \mathtt{E.flag} = \mathtt{W}) \cdot (t_2, \inv{push}(e_{t_2})) \cdot (t_2, \mathtt{E} = \{\mathtt{W}, e_{t_2}\}) \\
+\cdot (t_2, \ret{push}{1}) \cdot (t_1, \mathtt{E.flag} = \mathtt{F}) \cdot (t_1, \ret{pop}{e_{t_2}})
+\end{multline*}
+that highlight that the input value of the push is returned by the pop. But the analysis is not finished because the trace might increase infinitely. 
 
 

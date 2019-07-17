@@ -60,6 +60,7 @@
 \DeclareMathOperator{\lfp}{lfp}
 \DeclareMathOperator{\tid}{tid}
 \DeclareMathOperator{\red}{red}
+\DeclareMathOperator{\Mem}{Mem}
 
 \begin{document}
 
@@ -214,13 +215,14 @@ The partial order $\prec$ on the atoms induces a partial order on the abstract t
 \end{definition}
 
 \begin{definition}
-	An abstract trace $T$ is \textbf{reduced} if for all complete traces $T_1$ and $T_2$ such that $T=T_1\cdot T_2$ then $T_1 \prec T_2$. 
+	An abstract trace $T$ is \textbf{reduced} if for all traces $T_1$ and $T_2$ such that $T=T_1\cdot T_2$ then $T_1 \prec T_2$. 
 \end{definition}
 
 
 
-Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial traces. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace. 
-
+Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial traces. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace:
+\[ \red(T) = \min \{T_0 \mid \exists T_1, T = T_0 \cdot T_1 \mbox{ and } \Mem(T) \sqsubseteq \Mem(T_0) \}\]
+where $\Mem(T)$ is the abstract memory state after execution of the operation in the trace $T$. 
 
 
 More than an abstract trace, we need to keep the abstract memory state. Our aim is to connect the different values input and output by the function. For that, we need to use a relational abstract domain to represent the relation between the values of the variables. We can use the polygon abstract domain \cite{DBLP:journals/lisp/Mine06} to express these relations. 
@@ -228,7 +230,7 @@ More than an abstract trace, we need to keep the abstract memory state. Our aim 
 
 
 \begin{definition}[Abstract value]
-	An abstract value is disjunction of pairs $(T_i, S_i)$ where $T_i \in \aTraces$ is the abstract trace and $S_i$ is the abstract shared memory state corresponding to the abstract trace $T$, existencially quantified on the thread $t_1, \dots, t_n$. The \textbf{concretization} $\gamma$ associate the most general concrete traces and abstract states, \emph{i.e.}
+	An abstract value is a disjunction of pairs $(T_i, S_i)$ where $T_i \in \aTraces$ is the abstract trace and $S_i$ is the abstract shared memory state corresponding to the abstract trace $T$, existencially quantified on the thread $t_1, \dots, t_n$. The \textbf{concretization} $\gamma$ associate the most general concrete traces and abstract states, \emph{i.e.}
 	\[\gamma\left(\bigvee_i (T_i, S_i)\right) = \bigcup_i \{ (T, M_{T_i}) \mid T\in\gamma_{\Traces}(T_i) \}\]
 	where $M_{T_i}$ is the memory state after the execution of the trace $T$. 
 \end{definition}
@@ -247,10 +249,14 @@ Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2
 
 
 
+We can extend the notion of reduction to an abstract value, and $\red((T, M)) = (\red(T), \Mem(\red(T)))$. 
+This definition is useful to define the widening operator. 
 
 
-
-
+\begin{definition}[Widening]
+	Let $A = \bigvee_i (T_i, S_i)$ and $A' = \bigvee_j (T_j', S_j')$ two abstract values. We define 
+	\[A \nabla A' = \left(\bigvee_i \red((T_i, S_i))\right) \sqcup \left(\bigvee_j \red((T_j', S_j')) \right)\]
+\end{definition}
 
 
 
