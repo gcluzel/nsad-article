@@ -192,7 +192,7 @@ The semantic of the two built-in functions $\atomicbegin$ and $\atomicend$ is di
 
 	\subsection{Concrete trace semantic}
 	
-We can use another semantic with our parallel programs which is a trace semantic. Better than keeping the memory states at each point of the program, we can only keep the instructions executed, and we keep the order in which they were executed. A trace a is sequence of an atom of the form $(t, \mathtt{op})$ where $t \in \Thread$ is the thread that executes the operation $\mathtt{op}$. It can be an assignment, a comparison or an arithmetic operation. We will also add the call of function of the form $\inv{fun}$, and the return of function with the value returned $\ret{fun}{val}$.
+We can use another semantic with our parallel programs which is a trace semantic. Better than keeping the memory states at each point of the program, we can only keep the instructions executed, and we keep the order in which they were executed. A trace is sequence of atoms of the form $(t, \mathtt{op})$ where $t \in \Thread$ is the thread that executes the operation $\mathtt{op}$. It can be an assignment, a comparison or an arithmetic operation. We will also add the call of function of the form $\inv{fun}$, and the return of function with the value returned $\ret{fun}{val}$.
 We denote as $\Traces$ the set of all traces $T$. 
 
 We notice that the trace is more expressive than the memory state at a given point of the program because we can obtain the memory state from the trace. Indeed, if we execute the different operations in the trace we can compute the memory state exactly like if we executed the program. But the traces keep more information. They can express relations between threads.
@@ -221,7 +221,9 @@ The partial order $\prec$ on the atoms induces a partial order on the abstract t
 
 
 Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial traces. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace:
-\[ \red(T) = \min \{T_0 \mid \exists T_1, T = T_0 \cdot T_1 \mbox{ and } \Mem(T) \sqsubseteq \Mem(T_0) \}\]
+\begin{equation} \label{eq:red}
+	\red(T) = \min \{T_0 \mid \exists T_1, T = T_0 \cdot T_1 \wedge \Mem(T) \sqsubseteq \Mem(T_0)\}
+\end{equation}% \wedge T_1 \neq (\_, \inv{\_}) \cdot T_1' \}\]
 where $\Mem(T)$ is the abstract memory state after execution of the operation in the trace $T$. 
 
 
@@ -256,6 +258,7 @@ This definition is useful to define the widening operator.
 \begin{definition}[Widening]
 	Let $A = \bigvee_i (T_i, S_i)$ and $A' = \bigvee_j (T_j', S_j')$ two abstract values. We define 
 	\[A \nabla A' = \left(\bigvee_i \red((T_i, S_i))\right) \sqcup \left(\bigvee_j \red((T_j', S_j')) \right)\]
+	and we require that in \eqref{eq:red}, $T_1 \neq (\_, \inv{\_}) \cdot T_1'$.
 \end{definition}
 
 
@@ -275,7 +278,7 @@ This definition is useful to define the widening operator.
 
 \input{relwork}
 \bibliographystyle{plain}
-\bibliography{biblio}
+\bibliography{nsadbiblio, biblio}
 
 
 
