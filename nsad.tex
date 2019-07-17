@@ -222,7 +222,7 @@ The partial order $\prec$ on the atoms induces a partial order on the abstract t
 
 Since during the analysis we wish to capture only the last operations, we only keep the last $k$ assignments. We also do not want to make our trace infinite with irrelevant partial traces. That could happen when we will have finished our analysis and we reanalyze a function that have no dependency with the previous trace already found. Thus, we consider the function $\red : \aTraces \rightarrow \aTraces$ that associates to an abstract trace $T$ the smallest reduced trace:
 \begin{equation} \label{eq:red}
-	\red(T) = \min \{T_0 \mid \exists T_1, T = T_0 \cdot T_1 \wedge \Mem(T) \sqsubseteq \Mem(T_0)\}
+	\red(T) = \min \{T_0 \mid \exists T_1, T = T_0 \cdot T_1 \wedge \Mem(T_0) \sqsubseteq \Mem(T)\}
 \end{equation}% \wedge T_1 \neq (\_, \inv{\_}) \cdot T_1' \}\]
 where $\Mem(T)$ is the abstract memory state after execution of the operation in the trace $T$. 
 
@@ -251,16 +251,19 @@ Defining the join of two abstract values $A_1 = (T_1, S_1)$ and $A_2 = (T_2, S_2
 
 
 
-We can extend the notion of reduction to an abstract value, and $\red((T, M)) = (\red(T), \Mem(\red(T)))$. 
+We can extend the notion of reduction to an abstract value, and \[\red((T, M)) = (\red(T), \Mem(\red(T)) \sqcup \Mem(T)).\] 
 This definition is useful to define the widening operator. 
 
 
 \begin{definition}[Widening]
 	Let $A = \bigvee_i (T_i, S_i)$ and $A' = \bigvee_j (T_j', S_j')$ two abstract values. We define 
 	\[A \nabla A' = \left(\bigvee_i \red((T_i, S_i))\right) \sqcup \left(\bigvee_j \red((T_j', S_j')) \right)\]
-	and we require that in \eqref{eq:red}, $T_1 \neq (\_, \inv{\_}) \cdot T_1'$.
+	and we require that in the equation \eqref{eq:red}, $T_1 \neq (\_, \inv{\_}) \cdot T_1'$.
 \end{definition}
 
+
+
+The $\red$ function is not only used during the widening of the loop. It is also used during the stabilization operation. The stabilization might increase the length of the trace infinitely with irrelevant parts in the trace that are the traces of other threads without interaction with the analyzed thread.
 
 
 

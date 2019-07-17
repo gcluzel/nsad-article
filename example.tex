@@ -157,9 +157,21 @@ After one iteration of the loop, we need to widen with our operator $\nabla$. Li
 
 \paragraph{Next steps} Up to this point we have partially prove what we wanted to obtain, \emph{i.e.} the trace
 \begin{multline*}
-(t_1, \inv{pop}())\cdot (t_1, \mathtt{E.flag} = \mathtt{W}) \cdot (t_2, \inv{push}(e_{t_2})) \cdot (t_2, \mathtt{E} = \{\mathtt{W}, e_{t_2}\}) \\
+T = (t_1, \inv{pop}())\cdot (t_1, \mathtt{E.flag} = \mathtt{W}) \cdot (t_2, \inv{push}(e_{t_2})) \cdot (t_2, \mathtt{E} = \{\mathtt{W}, e_{t_2}\}) \\
 \cdot (t_2, \ret{push}{1}) \cdot (t_1, \mathtt{E.flag} = \mathtt{F}) \cdot (t_1, \ret{pop}{e_{t_2}})
 \end{multline*}
 that highlight that the input value of the push is returned by the pop. But the analysis is not finished because the trace might increase infinitely. 
+But as we have designed the stabilization operation, this issue will not happen. In our case, if we consider for example the trace $T_0$ defined above, we observe that the abstract memory after the execution of $T$ is equal to $M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = \top\}$ and the abstract memory after the execution of the empty trace $T_0$, is simply the memory in the initial state, which corresponds to $M_0 = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}$. Then we have $M_0 \sqsubseteq M$, and after the reduction, we get the following abstract state:
+\[
+\begin{cases}
+	T = \varepsilon\\
+	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = \top\}
+\end{cases}
+\]
 
+The analysis will restart with this new abstract value. We will get the same results than previously, with the initial value containing $\mathtt{E.value} = 0$, but with a more general beginning value. The analysis will finish with this new abstract value as an initial state.
+
+\bigskip
+
+Finally, we have proved the property we wanted, which was that for every \code{pop} that returns a value there exists a \code{push}, and the value returned by the \code{pop} was an input parameter of the \code{push}. This property can directly be read on the final traces we obtain when the analysis is finished. This example shows how our abstract domain can be used to prove properties on a concurrent data structures that uses cooperation between threads. Other data structures can be analyzed with this abstract domain, like the Java's exchanger. 
 
