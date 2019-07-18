@@ -50,7 +50,7 @@ int pop() {
 \end{figure}
 
 
-In this section we will show how we can use our abstract domain to find relations between operations of each thread on the exchanger stack. We consider the the exchanger stack, which is simply the Treiber's stack~\cite{DBLP:conf/spaa/HendlerSY04} with an exchange mechanism. The code of the exchanger of this stack is given in the figure \ref{fig:exchangerstack}. 
+In this section we would show an example of static analysis using our abstract domain. The fixpoint computation we use is the one defined in \cite{vv2} where thread interfaces (rely-garantee actions) capture relations between relation of thread operations where instead of using thread modular abstract of the state space we use thread interfaces in our abstract domain that capture operation of different threads. We consider the the exchanger stack, which is simply the Treiber's stack~\cite{DBLP:conf/spaa/HendlerSY04} with an exchange mechanism. The code of the exchanger of this stack is given in the figure \ref{fig:exchangerstack}. 
 The functions \code{push} and \code{pop} can also write on the stack but we do not consider this part, and we focus on the exchange mechanism.
 
 In this stack, a \code{push} and a \code{pop} can exchange their value without using the stack. If the value of the variable \code{flag} is equal to \code{F} (Final), then a \code{pop} executed by a thread $t$ can change it to \code{W} (Waiting) meaning that it is waiting for exchanging its value with a \code{push}. 
