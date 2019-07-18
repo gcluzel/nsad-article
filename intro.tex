@@ -1,3 +1,4 @@
+
   % !TEX root = nsad.tex
   \section{Introduction}
   
@@ -6,7 +7,7 @@ The design of concurrent data structures is an active research area.
 The first approach towards concurrent data structures uses locks, that ensure synchronization between threads by allowing at most one thread to write (read) a shared resource. 
 The problem with lock-based implementations is that they are blocking, i.e., if the thread holding the lock is suspended or crashes before releasing the lock, the entire execution blocks, no other thread being able to acquire a non-released lock. 
 Consequently, non-blocking implementations were developed, where the threads that cannot access the shared memory are not blocking, instead retry, report the operation as unsuccessful, etc.  
-Typical examples are Treiber's stack~\cite{treiber} or Michael-Scott queue~\cite{msqueue} (they are implemented using instructions like compare-and-swap).  
+Typical examples are Treiber's stack~\cite{DBLP:conf/spaa/HendlerSY04} or Michael-Scott queue~\cite{msqueue} (they are implemented using instructions like compare-and-swap).  
 However, even for these data structure concurrent accesses are sequentialized at one or two entry points of the data structure, despite its potentially unbounded size. Therefore, the latter data structures suffer also from a performance bottleneck, all accesses to the data structure being done at the top of the stack, respectively the head/tail of the queue, therefore the degree of parallelism is heavily restricted.  
 
 The advantage of these data structures is that they have a sequential specification, easily understood by programmers. More precisely, the standard correctness criteria for concurrent data structures is linearizability, which says that a client cannot distinguish  the concurrent implementation from a sequential (atomic) one. 

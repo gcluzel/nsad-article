@@ -2,8 +2,8 @@
 \section{Related work and conclusions}
 \label{sec:relwork}
 
-Static analysis by abstract interpretation is well perfected for numeric programs in the sequential setting and also well studied for the concurrent setting with a bounded number of threads~\cite{mine15,octogons,poly}. 
-Several successful approaches exist also for programs manipulating  sequential data structures\cite{SagivRW02,LiBCR17,pldi11}. 
+Static analysis by abstract interpretation is well perfected for numeric programs in the sequential setting and also well studied for the concurrent setting with a bounded number of threads~\cite{mine15,DBLP:journals/lisp/Mine06,DBLP:conf/popl/CousotH78}. 
+Several successful approaches exist also for programs manipulating  sequential data structures~\cite{SagivRW02,LiBCR17,pldi11}. 
 However, static analysis of concurrent data structures accessed concurrently by an unbounded number of threads is a research area in its beginnings. 
 
 The current state of art is the thread modular approach~\cite{threadmodular, Vafeiadis09, vv1}, which  captures the effect of all threads on the shared memory, but cannot represent the relation between the local states of two threads.  Thread modular analysis are incomplete, and cooperation based algorithms do not have a thread modular proof. 
