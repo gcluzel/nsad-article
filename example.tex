@@ -50,11 +50,11 @@ int pop() {
 \end{figure}
 
 
-In this section we would show an example of static analysis using our abstract domain. The fixpoint computation we use is the one defined in \cite{vv2} where thread interfaces (rely-garantee actions) capture relations between relation of thread operations where instead of using thread modular abstract of the state space we use thread interfaces in our abstract domain that capture operation of different threads. We consider the the exchanger stack, which is simply the Treiber's stack~\cite{DBLP:conf/spaa/HendlerSY04} with an exchange mechanism. The code of the exchanger of this stack is given in the figure \ref{fig:exchangerstack}. 
+In this section we show an example of static analysis using our abstract domain. The fixpoint computation we use is the one defined in \cite{vv2} where thread interfaces (rely-garantee actions) capture relations between relation of thread operations where instead of using thread modular abstract of the state space we use thread interfaces in our abstract domain that capture operation of different threads. We consider the the exchanger stack, which is simply the Treiber's stack~\cite{DBLP:conf/spaa/HendlerSY04} with an exchange mechanism. The code of the exchanger of this stack is given in figure \ref{fig:exchangerstack}. 
 The functions \code{push} and \code{pop} can also write on the stack but we do not consider this part, and we focus on the exchange mechanism.
 
 In this stack, a \code{push} and a \code{pop} can exchange their value without using the stack. If the value of the variable \code{flag} is equal to \code{F} (Final), then a \code{pop} executed by a thread $t$ can change it to \code{W} (Waiting) meaning that it is waiting for exchanging its value with a \code{push}. 
-Meanwhile, a \code{push} executed by a second thread $t'$ will detect that the value of the \code{flag} variable is equal to \code{W}, and the \code{push} will change it in \code{C} (Collided) and put its value \code{e} in the variable \code{value}. 
+Meanwhile, a \code{push} executed by a second thread $t'$ will detect that the value of the \code{flag} variable is equal to \code{W}, and the \code{push} will change it in \code{C} (Collided) and puts its value \code{e} in the variable \code{value}. 
 The thread $t$ that execute the \code{pop} can resume its execution and since the value of the flag has changed and is now equal to \code{C} then it resets the flag and returns the value passed by the \code{push}. 
 
 The aim of our analysis is to highlight the dependencies that exist between a push and a pop. For example we will show that for every \code{pop} that returns a value $v$, there exists a corresponding \code{push} that was called with the argument $v$.
@@ -63,7 +63,7 @@ The aim of our analysis is to highlight the dependencies that exist between a pu
 
 \paragraph{Analysis of the init part} 
 
-The library is first call in a sequential mode to be initialized. The initialization step only set the variable \code{E} to its initial value, which means that we will obtain as an initial state for the memory, the state $\{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}$.
+The library is first called in a sequential mode to be initialized. The initialization step only set the variable \code{E} to its initial value, which means that we will obtain as an initial state for the memory, the state $\{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}$.
 
 
 \paragraph{First step of the analysis}
@@ -104,7 +104,7 @@ When we apply the widening operator after one iteration in the loop, we get the 
 
 \paragraph{Second step of the analysis}
 
-Now the analysis use another thread $t'$ to analyze a function of the library. We will consider that the function \code{push} is analyzed during the second step. Before the call of the \code{push} function, we have to stabilize with all the possible actions from the other thread. Applying the reduce operation on top of the stabilization give us the following initial abstract state for the \code{push} analysis.
+Now the analysis uses another thread $t'$ to analyze a function of the library. We will consider that the function \code{push} is analyzed during the second step. Before the call of the \code{push} function, we have to stabilize with all the possible actions from the other thread. Applying the reduce operation on top of the stabilization give us the following initial abstract state for the \code{push} analysis.
 \[\begin{cases}
 	T = \varepsilon\\
 	M = \{\mathtt{E.flag} = \mathtt{F} \wedge \mathtt{E.value} = 0\}
